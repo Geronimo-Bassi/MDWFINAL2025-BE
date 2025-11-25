@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    /* Configuración de módulos y target */
+    "target": "ES2020",                    // Versión de JS a compilar
+    "module": "commonjs",                  // Sistema de módulos para Node.js
+    "lib": ["ES2020"],                     // Librerías de JS disponibles
+    "outDir": "./dist",                    // Carpeta de salida (código compilado)
+    "rootDir": "./src",                    // Carpeta raíz del código fuente
+    
+    /* Resolución de módulos */
+    "moduleResolution": "node",            // Estrategia de resolución tipo Node.js
+    "esModuleInterop": true,               // Compatibilidad con imports ES6
+    "resolveJsonModule": true,             // Permite importar archivos .json
+    
+    /* Verificación de tipos */
+    "strict": true,                        // Habilita todas las opciones estrictas
+    "noImplicitAny": true,                 // Error si hay tipos 'any' implícitos
+    "strictNullChecks": true,              // Verificación estricta de null/undefined
+    
+    /* Archivos adicionales */
+    "skipLibCheck": true,                  // No verificar archivos .d.ts de node_modules
+    "forceConsistentCasingInFileNames": true,  // Sensibilidad a mayúsculas
+    
+    /* Generación de código */
+    "sourceMap": true,                     // Genera archivos .map para debugging
+    "removeComments": true,                // Elimina comentarios en JS compilado
+    
+    /* Tipos para Node.js */
+    "types": ["node"]                      // Incluye definiciones de tipos de Node.js
+  },
+  "include": ["src/**/*"],                 // Archivos a compilar
+  "exclude": ["node_modules", "dist"]      // Archivos a excluir
+}
