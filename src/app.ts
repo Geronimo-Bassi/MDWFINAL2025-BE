@@ -1,6 +1,8 @@
 import express, { Application, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import pastillaRoutes from './routes/pastillaRoutes';
+import userRoutes from './routes/userRoutes';
+import tratamientoRoutes from './routes/tratamientoRoutes';
 
 // Cargar variables de entorno
 dotenv.config();
@@ -29,7 +31,9 @@ app.get('/', (req: Request, res: Response) => {
     version: '1.0.0',
     timestamp: new Date().toISOString(),
     endpoints: {
-      pastillas: '/api/pastillas'
+      pastillas: '/api/pastillas',
+      users: '/api/users',
+      tratamientos: '/api/tratamientos'
     }
   });
 });
@@ -47,8 +51,9 @@ app.get('/health', (req: Request, res: Response) => {
 // RUTAS DE LA API
 // ============================
 
-// Rutas para pastillas
 app.use('/api/pastillas', pastillaRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/tratamientos', tratamientoRoutes);
 
 // ============================
 // MANEJO DE RUTAS NO ENCONTRADAS (DEBE IR AL FINAL)
@@ -62,11 +67,9 @@ app.use((req: Request, res: Response) => {
     availableRoutes: [
       'GET /',
       'GET /health',
-      'GET /api/pastillas',
-      'POST /api/pastillas',
-      'GET /api/pastillas/:id',
-      'PUT /api/pastillas/:id',
-      'DELETE /api/pastillas/:id'
+      '/api/pastillas',
+      '/api/users',
+      '/api/tratamientos'
     ]
   });
 });

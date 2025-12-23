@@ -7,17 +7,12 @@ import Pastilla, { IPastilla } from '../models/Pastilla';
 
 export const crearPastilla = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { nombre, descripcion, dosis, frecuencia, fechaInicio, fechaFin } = req.body;
+    const { nombre, descripcion } = req.body;
 
-    // Crear nueva pastilla
+    // Crear nueva pastilla (Solo catálogo genérico)
     const nuevaPastilla: IPastilla = new Pastilla({
       nombre,
-      descripcion,
-      dosis,
-      frecuencia,
-      fechaInicio: fechaInicio ? new Date(fechaInicio) : new Date(),
-      fechaFin: fechaFin ? new Date(fechaFin) : undefined,
-      activo: true
+      descripcion
     });
 
     // Guardar en la base de datos
@@ -30,6 +25,16 @@ export const crearPastilla = async (req: Request, res: Response): Promise<void> 
     });
 
   } catch (error: any) {
+    // Manejo de error por duplicados (código 11000 en Mongo)
+    if (error.code === 11000) {
+      res.status(400).json({
+        success: false,
+        message: 'Ya existe una pastilla con ese nombre',
+        error: error.message
+      });
+      return;
+    }
+
     res.status(400).json({
       success: false,
       message: 'Error al crear la pastilla',
