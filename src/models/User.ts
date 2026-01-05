@@ -1,33 +1,52 @@
-import mongoose, { Document, Schema } from 'mongoose';
-
+import mongoose, { Document, Schema } from "mongoose";
 export interface IUser extends Document {
-    nombre: string;
-    email: string;
-    password?: string;
-    createdAt: Date;
-    updatedAt: Date;
+  nombre: string;
+  apellido?: string; // NUEVO - opcional
+  email: string;
+  password?: string;
+  fechaNacimiento?: Date; // NUEVO - opcional
+  estado: "activo" | "inactivo" | "bloqueado";
+  createdAt: Date;
+  updatedAt: Date;
 }
-
-const UserSchema: Schema = new Schema({
+const UserSchema: Schema = new Schema(
+  {
     nombre: {
-        type: String,
-        required: [true, 'El nombre es obligatorio'],
-        trim: true
+      type: String,
+      required: [true, "El nombre es obligatorio"],
+      trim: true,
+    },
+    apellido: {
+      // NUEVO
+      type: String,
+      required: false,
+      trim: true,
     },
     email: {
-        type: String,
-        required: [true, 'El email es obligatorio'],
-        unique: true, // Importante: no puede haber dos usuarios con el mismo email
-        trim: true,
-        lowercase: true // Guarda siempre en minúsculas para evitar problemas de login
+      type: String,
+      required: [true, "El email es obligatorio"],
+      unique: true,
+      trim: true,
+      lowercase: true,
     },
     password: {
-        type: String,
-        required: [false, 'La contraseña es requerida si te registras con correo'],
-
-    }
-}, {
-    timestamps: true
-});
-
-export default mongoose.model<IUser>('User', UserSchema);
+      type: String,
+      required: false,
+    },
+    fechaNacimiento: {
+      // NUEVO
+      type: Date,
+      required: false,
+    },
+    estado: {
+      type: String,
+      enum: ["activo", "inactivo", "bloqueado"],
+      default: "activo",
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+export default mongoose.model<IUser>("User", UserSchema);
