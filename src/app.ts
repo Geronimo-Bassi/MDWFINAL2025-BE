@@ -1,12 +1,12 @@
+// CRITICAL: Load environment variables FIRST, before any other imports
+import dotenv from "dotenv";
+dotenv.config();
+
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import pastillaRoutes from "./routes/pastillaRoutes";
 import userRoutes from "./routes/userRoutes";
 import tratamientoRoutes from "./routes/tratamientoRoutes";
-
-// Cargar variables de entorno
-dotenv.config();
 
 // Crear instancia de Express
 const app: Application = express();

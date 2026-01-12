@@ -9,7 +9,7 @@ export const crearUsuario = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { nombre, apellido, email, password, fechaNacimiento } = req.body;
+    const { nombre, apellido, email, telefono, fechaNacimiento } = req.body;
     // Verificar si ya existe
     const existeUsuario = await User.findOne({ email });
     if (existeUsuario) {
@@ -21,10 +21,10 @@ export const crearUsuario = async (
     }
     const nuevoUsuario: IUser = new User({
       nombre,
-      apellido, // NUEVO
+      apellido,
       email,
-      password, // Puede ser undefined para usuarios de Google
-      fechaNacimiento: fechaNacimiento ? new Date(fechaNacimiento) : undefined, // NUEVO
+      telefono,
+      fechaNacimiento: fechaNacimiento ? new Date(fechaNacimiento) : undefined,
     });
     const usuarioGuardado = await nuevoUsuario.save();
     res.status(201).json({
@@ -48,7 +48,7 @@ export const obtenerUsuarios = async (
   res: Response
 ): Promise<void> => {
   try {
-    const usuarios = await User.find().select("-password"); // No devolver password
+    const usuarios = await User.find();
 
     res.status(200).json({
       success: true,

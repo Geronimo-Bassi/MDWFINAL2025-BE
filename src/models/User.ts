@@ -1,10 +1,10 @@
 import mongoose, { Document, Schema } from "mongoose";
 export interface IUser extends Document {
   nombre: string;
-  apellido?: string; // NUEVO - opcional
+  apellido?: string;
   email: string;
-  password?: string;
-  fechaNacimiento?: Date; // NUEVO - opcional
+  telefono?: string;
+  fechaNacimiento?: Date;
   estado: "activo" | "inactivo" | "bloqueado";
   createdAt: Date;
   updatedAt: Date;
@@ -29,12 +29,16 @@ const UserSchema: Schema = new Schema(
       trim: true,
       lowercase: true,
     },
-    password: {
+    telefono: {
       type: String,
       required: false,
+      trim: true,
+      match: [
+        /^\+[1-9]\d{1,14}$/,
+        "Formato de teléfono inválido (debe incluir código de país, ej: +5491112345678)",
+      ],
     },
     fechaNacimiento: {
-      // NUEVO
       type: Date,
       required: false,
     },
