@@ -5,6 +5,7 @@ import {
   obtenerPastillaPorId,
   actualizarPastilla,
   eliminarPastilla,
+  
 } from "../controllers/pastillaController";
 import { validate } from "../middlewares/validate.middleware";
 import { pillSchema } from "../validations/pill.validation";

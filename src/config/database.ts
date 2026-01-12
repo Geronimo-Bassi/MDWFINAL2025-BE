@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 
 // Cargar variables de entorno
 dotenv.config();
@@ -11,17 +11,16 @@ dotenv.config();
 const connectDB = async (): Promise<void> => {
   try {
     // Conectar a MongoDB Atlas
-    const conn = await mongoose.connect(process.env.MONGODB_URI as string);
-    
-    console.log('╔════════════════════════════════════════╗');
-    console.log('║   🗄️  MongoDB conectado exitosamente  ║');
-    console.log('╚════════════════════════════════════════╝');
+    const conn = await mongoose.connect(process.env.MONGO_URI as string);
+
+    console.log("╔════════════════════════════════════════╗");
+    console.log("║   🗄️  MongoDB conectado exitosamente  ║");
+    console.log("╚════════════════════════════════════════╝");
     console.log(`📊 Host: ${conn.connection.host}`);
     console.log(`🏷️  Base de datos: ${conn.connection.name}`);
-    console.log('════════════════════════════════════════');
-    
+    console.log("════════════════════════════════════════");
   } catch (error) {
-    console.error('❌ Error conectando a MongoDB:', error);
+    console.error("❌ Error conectando a MongoDB:", error);
     process.exit(1); // Cerrar aplicación si no puede conectar
   }
 };
@@ -31,18 +30,18 @@ const connectDB = async (): Promise<void> => {
 // ============================
 
 // Evento cuando se conecta
-mongoose.connection.on('connected', () => {
-  console.log('🔗 Mongoose conectado a MongoDB Atlas');
+mongoose.connection.on("connected", () => {
+  console.log("🔗 Mongoose conectado a MongoDB Atlas");
 });
 
 // Evento cuando hay error
-mongoose.connection.on('error', (err) => {
-  console.error('❌ Error en la conexión de Mongoose:', err);
+mongoose.connection.on("error", (err) => {
+  console.error("❌ Error en la conexión de Mongoose:", err);
 });
 
 // Evento cuando se desconecta
-mongoose.connection.on('disconnected', () => {
-  console.log('🔌 Mongoose desconectado de MongoDB Atlas');
+mongoose.connection.on("disconnected", () => {
+  console.log("🔌 Mongoose desconectado de MongoDB Atlas");
 });
 
 // ============================

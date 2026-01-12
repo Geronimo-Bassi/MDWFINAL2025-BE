@@ -116,10 +116,6 @@ const TratamientoSchema: Schema = new Schema(
   }
 );
 
-// ============================
-// 4. MIDDLEWARE PRE-SAVE
-// ============================
-// Calcular automáticamente intervaloHoras y horarios
 TratamientoSchema.pre("save", function (this: ITratamiento, next) {
   // Solo calcular si es un documento nuevo o si cambió la frecuencia/horaInicio
   if (

@@ -14,9 +14,14 @@ export const registerSchema = Joi.object({
     "string.email": "Debe ser un email válido",
     "any.required": "El email es un campo requerido",
   }),
-  password: Joi.string().min(6).optional().allow("").messages({
-    "string.min": "La contraseña debe tener al menos 6 caracteres",
-  }),
+  telefono: Joi.string()
+    .pattern(/^\+[1-9]\d{1,14}$/)
+    .optional()
+    .allow("")
+    .messages({
+      "string.pattern.base":
+        "El teléfono debe incluir código de país (ej: +5491112345678)",
+    }),
   fechaNacimiento: Joi.date().optional().allow("").messages({
     "date.base": "Debe ser una fecha válida",
   }),
@@ -31,10 +36,14 @@ export const updateSchema = Joi.object({
     "string.empty": "El email no puede estar vacío",
     "string.email": "Debe ser un email válido",
   }),
-  password: Joi.string().min(6).optional().messages({
-    "string.empty": "La contraseña no puede estar vacía",
-    "string.min": "La contraseña debe tener al menos 6 caracteres",
-  }),
+
   apellido: Joi.string().optional(),
+  telefono: Joi.string()
+    .pattern(/^\+[1-9]\d{1,14}$/)
+    .optional()
+    .messages({
+      "string.pattern.base":
+        "El teléfono debe incluir código de país (ej: +5491112345678)",
+    }),
   fechaNacimiento: Joi.date().optional(),
 }).unknown(true); // Allow any additional fields
