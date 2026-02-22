@@ -1,6 +1,9 @@
 import Joi from "joi";
 
 export const registerSchema = Joi.object({
+  firebaseUid: Joi.string().optional().messages({
+    "string.empty": "El Firebase UID no puede estar vacío",
+  }),
   nombre: Joi.string().min(2).max(50).required().messages({
     "string.empty": "El nombre es obligatorio",
     "string.min": "El nombre debe tener al menos 2 caracteres",

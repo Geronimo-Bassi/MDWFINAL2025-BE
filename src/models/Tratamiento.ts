@@ -9,6 +9,7 @@ export interface IHorario {
 }
 
 export interface ITratamiento extends Document {
+  nombre: string;
   usuario: IUser["_id"];
   pastilla: IPastilla["_id"];
   dosis: string;
@@ -20,7 +21,6 @@ export interface ITratamiento extends Document {
   fechaFin?: Date;
   activo: boolean;
   estado: "activo" | "finalizado" | "suspendido" | "cancelado";
-  deletedAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -44,11 +44,18 @@ const HorarioSchema: Schema = new Schema(
       required: false,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const TratamientoSchema: Schema = new Schema(
   {
+    nombre: {
+      type: String,
+      required: [true, "El nombre del tratamiento es obligatorio"],
+      trim: true,
+      minlength: [3, "El nombre debe tener al menos 3 caracteres"],
+      maxlength: [100, "El nombre no puede exceder 100 caracteres"],
+    },
     usuario: {
       type: Schema.Types.ObjectId,
       ref: "User", // <-- Esto conecta con el modelo 'User'
@@ -106,14 +113,10 @@ const TratamientoSchema: Schema = new Schema(
       default: "activo",
       required: true,
     },
-    deletedAt: {
-      type: Date,
-      default: null,
-    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 TratamientoSchema.pre("save", function (this: ITratamiento, next) {
@@ -139,7 +142,7 @@ TratamientoSchema.pre("save", function (this: ITratamiento, next) {
       horarios.push({
         hora: `${String(hora).padStart(2, "0")}:${String(minuto).padStart(
           2,
-          "0"
+          "0",
         )}`,
         tomado: false,
         ultimaToma: undefined,

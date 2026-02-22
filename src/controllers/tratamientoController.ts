@@ -8,10 +8,11 @@ import Pastilla from "../models/Pastilla";
 // ============================
 export const crearTratamiento = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const {
+      nombre,
       usuarioId,
       pastillaId,
       dosis,
@@ -40,6 +41,7 @@ export const crearTratamiento = async (
 
     // 2. Crear Tratamiento
     const nuevoTratamiento: ITratamiento = new Tratamiento({
+      nombre,
       usuario: usuarioId,
       pastilla: pastillaId,
       dosis,
@@ -74,18 +76,42 @@ export const crearTratamiento = async (
 // ============================
 export const obtenerTratamientosPorUsuario = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const { usuarioId } = req.params;
+    const { estado } = req.query; // Parámetro opcional: ?estado=activo,finalizado,suspendido,cancelado
 
-    // Solo traer tratamientos NO borrados
-    const tratamientos = await Tratamiento.find({
-      usuario: usuarioId,
-      deletedAt: null,
-    })
+    // Construir filtro dinámico
+    const filtro: any = { usuario: usuarioId };
+
+    if (estado) {
+      // Si se proporciona un estado específico
+      if (typeof estado === "string") {
+        const estadosValidos = [
+          "activo",
+          "finalizado",
+          "suspendido",
+          "cancelado",
+        ];
+        const estadosArray = estado
+          .split(",")
+          .filter((e) => estadosValidos.includes(e));
+
+        if (estadosArray.length > 0) {
+          filtro.estado =
+            estadosArray.length === 1 ? estadosArray[0] : { $in: estadosArray };
+        }
+      }
+    } else {
+      // Por defecto, NO traer cancelados
+      filtro.estado = { $ne: "cancelado" };
+    }
+
+    const tratamientos = await Tratamiento.find(filtro)
       .populate("pastilla", "nombre descripcion") // Traer datos de la pastilla
-      .populate("usuario", "nombre email"); // Traer datos del usuario
+      .populate("usuario", "nombre email") // Traer datos del usuario
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -101,18 +127,14 @@ export const obtenerTratamientosPorUsuario = async (
   }
 };
 
-// ============================
-// OBTENER TODOS LOS TRATAMIENTOS
-// ============================
 export const obtenerTratamientos = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
-    // Solo traer tratamientos activos y no borrados
+    // Solo traer tratamientos activos y no cancelados
     const tratamientos = await Tratamiento.find({
       estado: { $in: ["activo", "suspendido"] },
-      deletedAt: null,
     })
       .populate("pastilla", "nombre descripcion")
       .populate("usuario", "nombre email")
@@ -132,17 +154,17 @@ export const obtenerTratamientos = async (
   }
 };
 
-// ============================
-// OBTENER TRATAMIENTO POR ID
-// ============================
 export const obtenerTratamientoPorId = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const { id } = req.params;
 
-    const tratamiento = await Tratamiento.findOne({ _id: id, deletedAt: null })
+    const tratamiento = await Tratamiento.findOne({
+      _id: id,
+      estado: { $ne: "cancelado" },
+    })
       .populate("pastilla", "nombre descripcion")
       .populate("usuario", "nombre email");
 
@@ -167,12 +189,9 @@ export const obtenerTratamientoPorId = async (
   }
 };
 
-// ============================
-// ELIMINAR TRATAMIENTO (Baja Lógica/Física)
-// ============================
 export const eliminarTratamiento = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const { id } = req.params;
@@ -184,11 +203,11 @@ export const eliminarTratamiento = async (
       // Baja Física: Eliminar permanentemente
       tratamientoEliminado = await Tratamiento.findByIdAndDelete(id);
     } else {
-      // Baja Lógica: Marcar como borrado
+      // Baja Lógica: Cambiar estado a "cancelado"
       tratamientoEliminado = await Tratamiento.findByIdAndUpdate(
         id,
-        { deletedAt: new Date() },
-        { new: true }
+        { estado: "cancelado", activo: false },
+        { new: true, runValidators: true },
       );
     }
 
@@ -205,7 +224,7 @@ export const eliminarTratamiento = async (
       message:
         hard === "true"
           ? "Tratamiento eliminado permanentemente"
-          : "Tratamiento eliminado lógicamente",
+          : "Tratamiento cancelado exitosamente",
       data: tratamientoEliminado,
     });
   } catch (error: any) {
@@ -222,7 +241,7 @@ export const eliminarTratamiento = async (
 // ============================
 export const cambiarEstadoTratamiento = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const { id } = req.params;
@@ -234,7 +253,7 @@ export const cambiarEstadoTratamiento = async (
       res.status(400).json({
         success: false,
         message: `Estado inválido. Debe ser uno de: ${estadosValidos.join(
-          ", "
+          ", ",
         )}`,
       });
       return;
@@ -243,7 +262,7 @@ export const cambiarEstadoTratamiento = async (
     const tratamientoActualizado = await Tratamiento.findByIdAndUpdate(
       id,
       { estado },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     )
       .populate("pastilla", "nombre descripcion")
       .populate("usuario", "nombre email");
@@ -276,11 +295,12 @@ export const cambiarEstadoTratamiento = async (
 
 export const actualizarTratamiento = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const { dosis, frecuencia, horaInicio, fechaInicio, fechaFin } = req.body;
+    const { nombre, dosis, frecuencia, horaInicio, fechaInicio, fechaFin } =
+      req.body;
     const tratamiento = await Tratamiento.findById(id);
     if (!tratamiento) {
       res
@@ -289,6 +309,7 @@ export const actualizarTratamiento = async (
       return;
     }
     // Actualizamos los campos
+    if (nombre) tratamiento.nombre = nombre;
     if (dosis) tratamiento.dosis = dosis;
     if (frecuencia) tratamiento.frecuencia = frecuencia;
     if (horaInicio) tratamiento.horaInicio = horaInicio;
@@ -317,7 +338,7 @@ export const actualizarTratamiento = async (
 // ============================
 export const marcarDosisComoPendiente = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const { id } = req.params; // ID del tratamiento
@@ -332,7 +353,10 @@ export const marcarDosisComoPendiente = async (
     }
 
     // Buscar el tratamiento
-    const tratamiento = await Tratamiento.findOne({ _id: id, deletedAt: null });
+    const tratamiento = await Tratamiento.findOne({
+      _id: id,
+      estado: { $ne: "cancelado" },
+    });
 
     if (!tratamiento) {
       res.status(404).json({
@@ -378,13 +402,12 @@ export const marcarDosisComoPendiente = async (
 // ============================
 export const resetearDosisDelDia = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
-    // Obtener todos los tratamientos activos
+    // Obtener todos los tratamientos activos (no cancelados)
     const tratamientos = await Tratamiento.find({
       estado: "activo",
-      deletedAt: null,
     });
 
     let tratamientosActualizados = 0;

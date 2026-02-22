@@ -5,10 +5,9 @@ import {
   obtenerPastillaPorId,
   actualizarPastilla,
   eliminarPastilla,
-  
 } from "../controllers/pastillaController";
 import { validate } from "../middlewares/validate.middleware";
-import { pillSchema } from "../validations/pill.validation";
+import { pastillaSchema } from "../validations/pastilla.validation";
 
 const router = Router();
 
@@ -16,13 +15,13 @@ const router = Router();
 router.get("/", obtenerPastillas);
 
 // POST /api/pastillas - Crear nueva pastilla
-router.post("/", validate(pillSchema), crearPastilla);
+router.post("/", validate(pastillaSchema), crearPastilla);
 
 // GET /api/pastillas/:id - Obtener pastilla por ID
 router.get("/:id", obtenerPastillaPorId);
 
 // PUT /api/pastillas/:id - Actualizar pastilla
-router.put("/:id", validate(pillSchema), actualizarPastilla);
+router.put("/:id", validate(pastillaSchema), actualizarPastilla);
 
 // DELETE /api/pastillas/:id - Eliminar pastilla
 router.delete("/:id", eliminarPastilla);
