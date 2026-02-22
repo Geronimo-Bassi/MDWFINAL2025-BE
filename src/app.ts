@@ -25,18 +25,22 @@ app.use(
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
 
+      // Permitir cualquier dominio de Vercel
+      const isVercel = origin.endsWith(".vercel.app");
+
       if (
         allowedOrigins.indexOf(origin) !== -1 ||
-        allowedOrigins.includes("*")
+        allowedOrigins.includes("*") ||
+        isVercel
       ) {
         callback(null, true);
       } else {
-        callback(new Error("Not allowed by CORS"));
+        callback(new Error(`Not allowed by CORS: ${origin}`));
       }
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   }),
 );
 
