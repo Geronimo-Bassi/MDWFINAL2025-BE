@@ -57,7 +57,7 @@ app.use(express.urlencoded({ extended: true }));
 // Ruta raíz para verificar que el servidor funciona
 app.get("/", (req: Request, res: Response) => {
   res.json({
-    message: "🚀 API de PillApp funcionando correctamente",
+    message: "API de PillApp funcionando correctamente",
     version: "1.0.0",
     timestamp: new Date().toISOString(),
     endpoints: {

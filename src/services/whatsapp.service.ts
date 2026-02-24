@@ -5,52 +5,39 @@ class WhatsAppService {
   private client: any = null;
   private initialized = false;
 
-  /**
-   * Inicializa el cliente de Twilio de forma lazy (solo cuando se necesita)
-   */
   private initializeClient() {
     if (this.initialized) return;
 
     this.initialized = true;
 
-    console.log("🔍 Checking Twilio credentials...");
     console.log(
       "   Account SID:",
       whatsappConfig.accountSid
         ? `${whatsappConfig.accountSid.substring(0, 10)}...`
-        : "NOT SET"
+        : "NOT SET",
     );
     console.log(
       "   Auth Token:",
-      whatsappConfig.authToken ? "SET (hidden)" : "NOT SET"
+      whatsappConfig.authToken ? "SET (hidden)" : "NOT SET",
     );
     console.log(
       "   WhatsApp Number:",
-      whatsappConfig.whatsappNumber || "NOT SET"
+      whatsappConfig.whatsappNumber || "NOT SET",
     );
 
     if (whatsappConfig.accountSid && whatsappConfig.authToken) {
       this.client = twilio(whatsappConfig.accountSid, whatsappConfig.authToken);
-      console.log("✅ Twilio WhatsApp client initialized successfully");
+      console.log("Twilio Funcionando");
     } else {
-      console.warn(
-        "⚠️ Twilio credentials not configured. WhatsApp notifications disabled."
-      );
+      console.warn("⚠️ Credenciales no configuradas");
     }
   }
 
-  /**
-   * Envía un recordatorio de tratamiento por WhatsApp
-   * @param to - Número de teléfono del destinatario (formato: +5491112345678)
-   * @param nombrePastilla - Nombre de la pastilla/medicamento
-   * @param dosis - Dosis del medicamento
-   * @param hora - Hora programada para la toma
-   */
   async sendTreatmentReminder(
     to: string,
     nombrePastilla: string,
     dosis: string,
-    hora: string
+    hora: string,
   ): Promise<void> {
     // Inicializar cliente si aún no se ha hecho
     this.initializeClient();
@@ -76,7 +63,7 @@ class WhatsAppService {
       });
 
       console.log(
-        `✅ WhatsApp enviado a ${to} - SID: ${response.sid} - Status: ${response.status}`
+        `✅ WhatsApp enviado a ${to} - SID: ${response.sid} - Status: ${response.status}`,
       );
     } catch (error: any) {
       console.error(`❌ Error al enviar WhatsApp a ${to}:`, error.message);
