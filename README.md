@@ -21,8 +21,3 @@ El código fuente se encuentra en el directorio `/src`:
 - `/services`: Lógica de integración con servicios externos.
 - `/validations`: Esquemas de validación de datos de entrada (Joi).
 
-## Scripts de package.json
-
-- `npm run dev`: Inicia el servidor de desarrollo con autorecarga.
-- `npm run build`: Transpila TypeScript a JavaScript en `/dist`.
-- `npm start`: Inicia la aplicación en producción.
