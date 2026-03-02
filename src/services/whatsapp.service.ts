@@ -58,7 +58,7 @@ class WhatsAppService {
 
       const response = await this.client.messages.create({
         from: whatsappConfig.whatsappNumber,
-        to: `whatsapp:${to}`,
+        to: to.startsWith("whatsapp:") ? to : `whatsapp:${to}`,
         body: message,
       });
 
